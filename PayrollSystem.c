@@ -37,7 +37,7 @@ typedef struct{
     unsigned int year:7;    // YY
     unsigned int month:4;   // MM
     unsigned int day:5;     // DD
-}date;                      // CONSTRAINT: No negative values
+}dateDetails;                      // CONSTRAINT: No negative values
 
 typedef struct{
     char email[32];         // must have '@' and '.' for valid email
@@ -73,6 +73,7 @@ typedef struct{
     char empID[8];          // employee ID
     nameDetails name;       
     contactDetails contact;
+    dateDetails dateEmployed;
     empStatus status;
     paymentDetails details;
 }employeeDetails;           // the structure to be written in the 'EmployeeFile.bin'
@@ -105,6 +106,8 @@ int main(){
     printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
     printf("\n==========================================");
     initialize();
+
+    /* MAIN MENU */
 
     return 0;
 }
