@@ -52,11 +52,15 @@ typedef struct{
 
 typedef struct{
     char empID[8];          // employee ID (CONSTRAINT: Must match an existing employee ID)
-    char payrollID[6];      // payroll ID (CONSTRAINT: See format below)
+    char payrollID[6];      // payroll ID  (CONSTRAINT: See format below)
     int daysAbsent;         // number of days absent for the period
     int hoursOvertime;      // overtime duration for the period, in hours
     int minsUndertime;      // undertime duration for the period, in minutes
 }attendanceDetails;         // the structure to be written in the 'EmployeeFile.bin'
+
+/* Payroll ID is YYMMPG - Year, Month, Period, Group #
+ * Example:      22011A - Period 1, January 2022, Group A
+ */
 
 /* Linked list for attendance details */
 typedef struct cell{
@@ -78,19 +82,22 @@ typedef struct{
     attendanceHistory history;  //head pointer of the attendance linked list
 }employeeInfo;
 
-/* Hash table of employees - OPEN HASHING WITH 100 BUCKETS*/
-typedef struct{
-
-};
-
-
-/* Payroll ID is YYMMPG - Year, Month, Period, Group #
- * Example:      22011A - Period 1, January 2022, Group A
+/* Hash table of employees - CLOSED HASHING WITH MAX BUCKETS, WITH LINEAR PROBING
+ *  I chose closed hashing ra para sayun ma clear ang memory by avoiding dynamic cells,
+    since when we terminate a program we have to free all dynamic memory
  */
+typedef enum{
+    ACTIVE, EMPTY, DELETED      // occupancy of a hash table bucket
+}cellStatus;
 
+typedef struct{
+    cellStatus cellinfo;
+    employeeInfo employee;
+}employeeTable;
 
 /***** FUNCTION PROTOTYPES *****/
-void initialize();  // initialize by loading existing file. If none, new file will be created
+void initialize();          // initialize by loading existing file. If none, new file will be created
+void terminate();           // properly terminate the file by freeing all dynamic memory (attendance LL)
 
 /***** main() function - Handles the main menu and calls the subfunction *****/
 int main(){
