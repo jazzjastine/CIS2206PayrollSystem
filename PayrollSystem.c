@@ -109,6 +109,7 @@ int main(){
 
     /* MAIN MENU */
 
+    getch();
     return 0;
 }
 
