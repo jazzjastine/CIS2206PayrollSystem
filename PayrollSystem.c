@@ -88,7 +88,7 @@ typedef struct{
     since when we terminate a program we have to free all dynamic memory
  */
 typedef enum{
-    ACTIVE, EMPTY, DELETED      // occupancy of a hash table bucket
+    OCCUPIED, EMPTY, DELETED      // occupancy of a hash table bucket
 }cellStatus;
 
 typedef struct{
