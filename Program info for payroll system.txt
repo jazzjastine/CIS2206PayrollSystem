@@ -1,0 +1,63 @@
+Files:
+Employee list
+Attendance summary (by employee, by period ID)
+
+Features:
+Main menu
+Create employee
+   - Emp ID
+   - Name
+   - Department #/Group #
+   - Email
+   - Contact number [12]
+   - Type (,,)
+   - status (active/inactive)
+   * Basic salary
+   * Overtime hourly pay
+   * Government contributions (Amount)
+    
+Save all data (with confirmation)
+Reload files (with confirmation)
+
+Search employee
+- Display details (include computation of salary, formatted)
+    - latest period or all periods
+- Manually edit details (?)
+    - period # (payroll #)
+- Mark as active/inactive
+
+
+
+Input payroll
+Enter Department/Group #
+Enter start date
+Enter end date
+     - Generate Payroll id - YYMMP[Department] - 22011A
+     - date format constraint: MM/DD/YYYY
+     - create algorithm to determine day difference
+     - compute for no. of working days. 
+     - Have a separate list of public holidays
+       embed them in the function being used.
+Enter attendance info for each ACTIVE employee in the group
+     - no. days absent, hours overtime, mins undertime
+
+[optional] - 13th month pay -> compute "percentage" of attendance within the year and include it in the December payroll (detect Dec month)
+
+[suggestion] concatenate payroll ID and employee ID in attendance summary entry
+
+Data structure:
+Hash table - Employee list
+   In every employee, linked list of attendances sorted in descending order
+strstr()
+
+Data validation checking:
+- no empty name
+- no negative values
+- no ID duplication
+Efficiency: Time and spacce complexity (including file storage)
+Find Maam Pena's coding convention
+
+
+
+
+
