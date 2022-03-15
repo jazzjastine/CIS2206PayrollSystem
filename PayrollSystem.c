@@ -13,35 +13,117 @@
 #include<string.h>
 #include<stdlib.h>
 
+/***** CONSTANTS *****/
+#define MAX 512
+#define EMP_FILENAME 'EmployeeFile.bin'
+#define ATT_FILENAME 'AttendanceFile.bin'
+/* Note: Actual file names will be '<CompanyName>_EmployeeFile.bin'. 
+ * Company name will be inputted at main menu upon program and data initialization.
+ */
+
 /***** DATA STRUCTURE DEFINITION *****/
 typedef struct{
-    char LName[16];
-    char fName[24];
-    char MI;
-}nameType;
+    char LName[16];         // last name
+    char fName[24];         // first name
+    char MI;                // middle initial
+}nameDetails;
 
-char fileName[] = "EmployeeList";
+typedef enum{
+    ACTIVE,                 // only active employees will be prompted attendance entry
+    INACTIVE                // in the specified group for each new payroll entry
+}empStatus;
+
+typedef struct{
+    unsigned int year:7;    // YY
+    unsigned int month:4;   // MM
+    unsigned int day:5;     // DD
+}date;                      // CONSTRAINT: No negative values
+
+typedef struct{
+    char email[32];         // must have '@' and '.' for valid email
+    char phone[11];         // 11-digit mobile number
+}contactDetails;
+
+typedef struct{
+    float basicSalary;      // basic monthly salary, in PHP
+    float overtimePay;      // overtime monthly pap, in PHP
+    float contributions;    // total government contributions, in PHP
+}paymentDetails;            // CONSTRAINT: No negative values
+
+typedef struct{
+    char empID[8];          // employee ID (CONSTRAINT: Must match an existing employee ID)
+    char payrollID[6];      // payroll ID (CONSTRAINT: See format below)
+    int daysAbsent;         // number of days absent for the period
+    int hoursOvertime;      // overtime duration for the period, in hours
+    int minsUndertime;      // undertime duration for the period, in minutes
+}attendanceDetails;         // the structure to be written in the 'EmployeeFile.bin'
+
+/* Linked list for attendance details */
+typedef struct cell{
+    attendanceDetails attendance;
+    struct cell* link;
+}cellType, *attendanceHistory;
+
+/* Employee structure, with attendance details LL pointer */
+typedef struct{
+    char empID[8];          // employee ID
+    nameDetails name;       
+    contactDetails contact;
+    empStatus status;
+    paymentDetails details;
+}employeeDetails;           // the structure to be written in the 'EmployeeFile.bin'
+
+typedef struct{
+    employeeDetails employee;   //employee details
+    attendanceHistory history;  //head pointer of the attendance linked list
+}employeeInfo;
+
+/* Hash table of employees - OPEN HASHING WITH 100 BUCKETS*/
+typedef struct{
+
+};
+
+
+/* Payroll ID is YYMMPG - Year, Month, Period, Group #
+ * Example:      22011A - Period 1, January 2022, Group A
+ */
 
 
 /***** FUNCTION PROTOTYPES *****/
-
-
-
+void initialize();  // initialize by loading existing file. If none, new file will be created
 
 /***** main() function - Handles the main menu and calls the subfunction *****/
-void main(){
-    printf("hi!");
+int main(){
+    printf("\n==========================================");
+    printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
+    printf("\n==========================================");
+    initialize();
 
+    return 0;
 }
 
 /***** FUNCTION DEFINITIONS *****/
 
+/**
+ * @brief initializes the data and loads the file, sets up the internal memory
+ * @param -
+ * @return -
+ */
+void initialize(){
+    /* Variable declarations */
+    /* Variable initializations */
+    /* Body */
+    /* Exit/return statement, if applicable */
+}
 
 /**
- * @brief fhfhf
- * @param  
- * @return
+ * @brief give a brief description of the function
+ * @param describe the parameters
+ * @return state what the function returns
  */
-void function1(int param1,int param2){
-
+void func1(int args1,int args2){
+    /* Variable declarations */
+    /* Variable initializations */
+    /* Body */
+    /* Exit/return statement, if applicable */
 }
