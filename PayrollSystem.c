@@ -14,7 +14,7 @@
 #include<stdlib.h>
 
 /***** CONSTANTS *****/
-#define MAX 512
+#define SIZE 512                    // hash table size
 #define EMP_FILENAME 'EmployeeFile.bin'
 #define ATT_FILENAME 'AttendanceFile.bin'
 /* Note: Actual file names will be '<CompanyName>_EmployeeFile.bin'. 
@@ -70,7 +70,7 @@ typedef struct cell{
 
 /* Employee structure, with attendance details LL pointer */
 typedef struct{
-    char empID[8];          // employee ID
+    char empID[12];          // employee ID
     nameDetails name;       
     contactDetails contact;
     dateDetails dateEmployed;
@@ -87,18 +87,23 @@ typedef struct{
  *  I chose closed hashing ra para sayun ma clear ang memory by avoiding dynamic cells,
     since when we terminate a program we have to free all dynamic memory
  */
-typedef enum{
-    OCCUPIED, EMPTY, DELETED      // occupancy of a hash table bucket
-}cellStatus;
-
-typedef struct{
-    cellStatus cellinfo;
-    employeeInfo employee;
-}employeeTable;
+typedef employeeInfo employeeTable[SIZE];  // constant hash table
 
 /***** FUNCTION PROTOTYPES *****/
 void initialize();          // initialize by loading existing file. If none, new file will be created
 void terminate();           // properly terminate the file by freeing all dynamic memory (attendance LL)
+int saveData();             // returns 1 if successful save and 0 if not
+int loadData();
+
+// addEmployee();
+// editEmployee(char empID[], int mode);
+// createPayroll();
+// 
+//
+
+int hash(char empID);
+// date manipulation functions
+
 
 /***** main() function - Handles the main menu and calls the subfunction *****/
 int main(){
