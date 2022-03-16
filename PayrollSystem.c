@@ -14,9 +14,10 @@
 #include<stdlib.h>
 
 /***** CONSTANTS *****/
-#define MAX 512
+#define SIZE 512                    // hash table size
 #define EMP_FILENAME 'EmployeeFile.bin'
 #define ATT_FILENAME 'AttendanceFile.bin'
+#define PAY_FILENAME 'PayrollIDList.bin'
 /* Note: Actual file names will be '<CompanyName>_EmployeeFile.bin'. 
  * Company name will be inputted at main menu upon program and data initialization.
  */
@@ -70,7 +71,8 @@ typedef struct cell{
 
 /* Employee structure, with attendance details LL pointer */
 typedef struct{
-    char empID[8];          // employee ID
+    char empID[8];          // employee ID (7 characters)
+                            // for has table: Dummy values - "EMPTY" and "DELETED"
     nameDetails name;       
     contactDetails contact;
     dateDetails dateEmployed;
@@ -87,28 +89,65 @@ typedef struct{
  *  I chose closed hashing ra para sayun ma clear ang memory by avoiding dynamic cells,
     since when we terminate a program we have to free all dynamic memory
  */
-typedef enum{
-    OCCUPIED, EMPTY, DELETED      // occupancy of a hash table bucket
-}cellStatus;
-
-typedef struct{
-    cellStatus cellinfo;
-    employeeInfo employee;
-}employeeTable;
+typedef employeeInfo employeeTable[SIZE];  // constant hash table
 
 /***** FUNCTION PROTOTYPES *****/
 void initialize();          // initialize by loading existing file. If none, new file will be created
 void terminate();           // properly terminate the file by freeing all dynamic memory (attendance LL)
+int saveData();             // returns 1 if successful save and 0 if not
+int loadData();
+
+// addEmployee();
+// editEmployee(char empID[], int mode);
+// createPayroll();
+// 
+//
+
+int hash(char empID);
+// date manipulation functions
+
 
 /***** main() function - Handles the main menu and calls the subfunction *****/
 int main(){
+    
+    /* Employee hash table declaration */
+    employeeTable empTable;
+    
     printf("\n==========================================");
     printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
     printf("\n==========================================");
-    initialize();
+    initialize(); // ask for input of company name
 
     /* MAIN MENU */
+    
+    /*
 
+        Create employee
+        View list of employees
+            (Display ID and names)
+        View specific employee info
+            Enter employee ID
+                1. (Display complete details
+                2. (Display Periods)
+                    Enter period to display
+                        Retrieve desired attendance info -> Compute on the spot and display salary breakdown
+
+        Edit employee info
+            Enter employee ID
+            Edit Personal Details
+            Edit Attendance Info
+                (Display Periods) Enter period to edit
+                
+        Create Payroll
+            Enter Payroll Period and Group
+                Confirm period entered or cancel
+                For each employee -> Enter Attendance for Individual Employees -> insertFirst() to LL of the employee
+        Reload 
+        Exit
+            Confirm exit
+    */
+
+    getch();
     return 0;
 }
 
