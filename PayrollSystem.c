@@ -103,8 +103,7 @@ typedef employeeInfo employeeTable[SIZE]; // constant hash table
 /***** FUNCTION PROTOTYPES *****/
 void initialize(employeeTable *empTable); // initialize by loading existing file. If none, new file will be created
 int initEmpList(char companyName[]);
-void initAttendanceList(char companyName[]);
-void initPayrollList(char companyName[]);
+int initAttendanceList(char companyName[]);
 /*End of initialization function Protypes */
 
 void terminate(); // properly terminate the file by freeing all dynamic memory (attendance LL)
@@ -198,10 +197,9 @@ void initialize(employeeTable *empTable)
     printf("\nEnter Company Name: ");
     scanf("%s", &companyName);
 
-    catcher = initEmpList(companyName);
-    printf("Employee: %d", catcher);
-    // initAttendanceList(companyName);
-    // initPayrollList(companyName);
+    initEmpList(companyName);
+    initAttendanceList(companyName);
+
 
     /* Variable declarations */
 
@@ -235,6 +233,7 @@ int initEmpList(char companyName[])
         {
             count++;
         }
+        fclose(fp);
     }
     else
     {
@@ -242,8 +241,29 @@ int initEmpList(char companyName[])
     }
     return count;
 }
-void initAttendanceList(char companyName[]);
-void initPayrollList(char companyName[]);
+int initAttendanceList(char companyName[]){
+    FILE *fp;
+    employeeTable employeeCount;
+    int count = 0;
+
+    strcat(companyName, EMP_FILENAME);
+    fp = fopen(companyName, "ab+");
+
+    if (fp != NULL)
+    { // Means that company is new and not yet created.
+        while (fread(&employeeCount, sizeof(employeeInfo), 1, fp) != 0)
+        {
+            count++;
+        }
+        fclose(fp);
+    }
+    else
+    {
+        printf("Error unable to open file");
+    }
+    return count;
+}
+
 
 /**
  * @brief displays the menu of the entire program
