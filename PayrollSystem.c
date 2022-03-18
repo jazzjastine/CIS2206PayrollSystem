@@ -96,6 +96,14 @@ void initialize();          // initialize by loading existing file. If none, new
 void terminate();           // properly terminate the file by freeing all dynamic memory (attendance LL)
 int saveData();             // returns 1 if successful save and 0 if not
 int loadData();
+
+void createEmployee();      // change accordingly
+void viewEmployeeList();
+void viewEmployee();
+void editEmployee();
+void createPayroll();
+void confirmExit();
+
 void loadMenu();            // displays the main menu for the user.
 
 // addEmployee();
@@ -186,31 +194,27 @@ void loadMenu(){
         printf("\n==========================================");
         printf("\n                Main Menu                 ");
         printf("\n==========================================");
-        printf("\n1 || Create Employee");
-        printf("\n2 || View Employee List");
-        printf("\n3 || View Specific Employee");
-        printf("\n4 || Edit Employee Details");
-        printf("\n5 || Create Payroll");
-        printf("\n6 || Reload");
-        printf("\n0 || Exit");
+        printf("\n||  1  ||   Create Employee             ||");
+        printf("\n||  2  ||   View Employee List          ||");
+        printf("\n||  3  ||   View Specific Employee      ||");
+        printf("\n||  4  ||   Edit Employee Detais        ||");
+        printf("\n||  5  ||   Create Payroll              ||");
+        printf("\n||  0  ||   Exit                        ||");
 
         scanf("%d", &choice);
 
         switch(choice) {
-            case 1: 
+            case 1: createEmployee();
                     break;
-            case 2: 
+            case 2: viewEmployeeList();
                     break;
-            case 3: 
+            case 3: viewEmployee();
                     break;
-            case 4: 
+            case 4: editEmployee();
                     break;
-            case 5: 
+            case 5: createPayroll();
                     break;
-            case 6: 
-                    break;
-            case 0: printf("\nProgram Closing...");
-                    exit(0);
+            case 0: confirmExit();
                     break;
             default:printf("\nInvalid Choice - Please use digits only");
                     break;
@@ -231,4 +235,29 @@ void func1(int args1,int args2){
     /* Variable initializations */
     /* Body */
     /* Exit/return statement, if applicable */
+}
+
+/* change accordingly */
+void createEmployee() {
+
+}
+
+void viewEmployeeList() {
+
+}
+
+void viewEmployee() {
+
+}
+
+void editEmployee() {
+
+}
+
+void createPayroll() {
+
+}
+
+void confirmExit() {
+
 }
