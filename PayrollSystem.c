@@ -117,8 +117,9 @@ int main(){
     printf("\n==========================================");
     printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
     printf("\n==========================================");
-    loadMenu();
+    
     initialize(); // ask for input of company name
+    loadMenu();
 
     /* MAIN MENU */
     
@@ -162,8 +163,11 @@ int main(){
  */
 void initialize(){
     /* Variable declarations */
+
     /* Variable initializations */
+
     /* Body */
+    
     /* Exit/return statement, if applicable */
 }
 
@@ -173,8 +177,10 @@ void initialize(){
  * @return - no return value
  */
 void loadMenu(){
+    /* Variable declarations */
     int choice; // for switch statement main menu
 
+    /* Body */
     do
     {
         printf("\n==========================================");
@@ -211,6 +217,8 @@ void loadMenu(){
 
         }
     } while (choice != 0);
+
+    /* Exit/return statement, if applicable */
 }
 
 /**
