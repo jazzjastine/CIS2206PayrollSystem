@@ -10,15 +10,14 @@
 
 /***** HEADER FILES TO INCLUDE *****/
 #include<stdio.h>
-#include<string.h>
 #include<stdlib.h>
 #include<conio.h> 
 
 /***** CONSTANTS *****/
 #define SIZE 512                    // hash table size
-#define EMP_FILENAME 'EmployeeFile.bin'
-#define ATT_FILENAME 'AttendanceFile.bin'
-#define PAY_FILENAME 'PayrollIDList.bin'
+#define EMP_FILENAME "_EmployeeFile.bin"
+#define ATT_FILENAME "_AttendanceFile.bin"
+#define PAY_FILENAME "_PayrollIDList.bin"
 /* Note: Actual file names will be '<CompanyName>_EmployeeFile.bin'. 
  * Company name will be inputted at main menu upon program and data initialization.
  */
@@ -73,7 +72,7 @@ typedef struct cell{
 /* Employee structure, with attendance details LL pointer */
 typedef struct{
     char empID[8];          // employee ID (7 characters)
-                            // for has table: Dummy values - "EMPTY" and "DELETED"
+                            // for hash table: Dummy values - "EMPTY" and "DELETED"
     nameDetails name;       
     contactDetails contact;
     dateDetails dateEmployed;
@@ -93,7 +92,7 @@ typedef struct{
 typedef employeeInfo employeeTable[SIZE];  // constant hash table
 
 /***** FUNCTION PROTOTYPES *****/
-void initialize();          // initialize by loading existing file. If none, new file will be created
+void initialize(employeeTable *empTable);          // initialize by loading existing file. If none, new file will be created
 void terminate();           // properly terminate the file by freeing all dynamic memory (attendance LL)
 int saveData();             // returns 1 if successful save and 0 if not
 int loadData();
@@ -127,7 +126,7 @@ int main(){
     printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
     printf("\n==========================================");
     
-    initialize(); // ask for input of company name
+    initialize(&empTable); // ask for input of company name
     loadMenu();
 
     /* MAIN MENU */
@@ -167,13 +166,13 @@ int main(){
 
 /**
  * @brief initializes the data and loads the file, sets up the internal memory
- * @param -
- * @return -
+ * @param - gets pointer of employeeTable to initialize
+ * @return - implicit return
  */
-void initialize(){
+void initialize(employeeTable *empTable){
     /*Variable Definition*/
     FILE* fp;
-    char fileType[8]= ".bin", companyName[32];
+    char companyName[32];
 
     /*Clear the screen of Welcome" */
     printf("\nPress any key to start "); 
@@ -183,15 +182,11 @@ void initialize(){
     /*Start of the Program */
     printf("\nEnter Company Name: ");
     scanf("%s", &companyName);
-    strcat(companyName, fileType);
+    strcat(companyName, EMP_FILENAME);
     fp = fopen(companyName, "rb+");
 
     if(fp == NULL){    //Means that company is still new and not yet created.
         
-
-
-
-
     }else{
         printf("File exist");
     }
@@ -202,6 +197,15 @@ void initialize(){
     /* Body */
     
     /* Exit/return statement, if applicable */
+
+    int i;
+    for ( i = 0; i < SIZE; i++)                           // loop for hash table initialization
+    {
+        strcpy((*empTable)[i].employee.empID, "EMPTY");   // sets each employee ID to EMPTY
+        empTable[i]->history = NULL;                      // sets each head pointer to NULL
+        printf("%s", (*empTable)[i].employee.empID);      // test
+    }
+    
 }
 
 /**
