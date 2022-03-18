@@ -12,6 +12,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<stdlib.h>
+#include<conio.h> 
 
 /***** CONSTANTS *****/
 #define SIZE 512                    // hash table size
@@ -170,6 +171,10 @@ int main(){
  * @return -
  */
 void initialize(){
+    char companyName[32];
+    printf("\nEnter Company Name: ");
+    scanf("%s", &companyName);
+    printf("%s", companyName);
     /* Variable declarations */
 
     /* Variable initializations */
@@ -200,6 +205,7 @@ void loadMenu(){
         printf("\n||  4  ||   Edit Employee Detais        ||");
         printf("\n||  5  ||   Create Payroll              ||");
         printf("\n||  0  ||   Exit                        ||");
+        printf("\n\nYour Choice: ");
 
         scanf("%d", &choice);
 
@@ -261,3 +267,4 @@ void createPayroll() {
 void confirmExit() {
 
 }
+
