@@ -171,10 +171,30 @@ int main(){
  * @return -
  */
 void initialize(){
-    char companyName[32];
+    /*Variable Definition*/
+    FILE* fp;
+    char fileType[8]= ".bin", companyName[32];
+
+    /*Clear the screen of Welcome" */
+    printf("\nPress any key to start "); 
+    getch();
+    printf("\e[1;1H\e[2J");  //Similar to clrscr() function. Can't use conio.h, only for _WIN32
+
+    /*Start of the Program */
     printf("\nEnter Company Name: ");
     scanf("%s", &companyName);
-    printf("%s", companyName);
+    strcat(companyName, fileType);
+    fp = fopen(companyName, "rb+");
+
+    if(fp == NULL){    //Means that company is still new and not yet created.
+        
+
+
+
+
+    }else{
+        printf("File exist");
+    }
     /* Variable declarations */
 
     /* Variable initializations */
