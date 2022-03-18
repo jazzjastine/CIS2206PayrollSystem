@@ -96,6 +96,7 @@ void initialize();          // initialize by loading existing file. If none, new
 void terminate();           // properly terminate the file by freeing all dynamic memory (attendance LL)
 int saveData();             // returns 1 if successful save and 0 if not
 int loadData();
+void loadMenu();            // displays the main menu for the user.
 
 // addEmployee();
 // editEmployee(char empID[], int mode);
@@ -116,6 +117,7 @@ int main(){
     printf("\n==========================================");
     printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
     printf("\n==========================================");
+    loadMenu();
     initialize(); // ask for input of company name
 
     /* MAIN MENU */
@@ -163,6 +165,52 @@ void initialize(){
     /* Variable initializations */
     /* Body */
     /* Exit/return statement, if applicable */
+}
+
+/**
+ * @brief displays the menu of the entire program
+ * @param - no arguments
+ * @return - no return value
+ */
+void loadMenu(){
+    int choice; // for switch statement main menu
+
+    do
+    {
+        printf("\n==========================================");
+        printf("\n                Main Menu                 ");
+        printf("\n==========================================");
+        printf("\n1 || Create Employee");
+        printf("\n2 || View Employee List");
+        printf("\n3 || View Specific Employee");
+        printf("\n4 || Edit Employee Details");
+        printf("\n5 || Create Payroll");
+        printf("\n6 || Reload");
+        printf("\n0 || Exit");
+
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1: 
+                    break;
+            case 2: 
+                    break;
+            case 3: 
+                    break;
+            case 4: 
+                    break;
+            case 5: 
+                    break;
+            case 6: 
+                    break;
+            case 0: printf("\nProgram Closing...");
+                    exit(0);
+                    break;
+            default:printf("\nInvalid Choice - Please use digits only");
+                    break;
+
+        }
+    } while (choice != 0);
 }
 
 /**
