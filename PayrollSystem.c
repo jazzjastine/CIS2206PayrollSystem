@@ -228,6 +228,7 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
     {
         .employee =
         {
+            .empID = 0,
             .name =
             {
                 .fName = "",
@@ -258,6 +259,7 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
 
     while(!exitFlag)
     {
+        system("cls");
         printf("\n==========================================");
         printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
         printf("\n==========================================");
@@ -267,10 +269,10 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
         printf("\n[4] Date(MM/DD/YY): \t%02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
         printf("\n[5] Email:          \t%s", newEmployee.employee.contact.email);
         printf("\n[6] Contact No.:    \t%s", newEmployee.employee.contact.phone);
-        printf("\ne = to exit, c = to create employee ");
         printf("\n==========================================");
-        printf("\nChoice: ");
-        scanf(" %c",&choice);
+        printf("\n[c] create employee | [e] exit ");
+        printf("\n\nChoice: ");
+        scanf(" %c", &choice);
         getchar();
         switch(choice) 
         {
