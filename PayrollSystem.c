@@ -206,42 +206,64 @@ void func1(int args1,int args2){
     /* Exit/return statement, if applicable */
 }
 
-int hash(char empID[]) // String folding
+int hash(char empID[8]) // String folding
 {
-    int sum = 1, i;
-
+    int i;
+    char hello;
+    unsigned long sum = 1;
     for(i = 0; i < 7; i++) {
-        sum += sum * (int)empID[i];
+        hello = empID[i];
+        sum += sum * empID[i];
     }
 
-    return abs(sum) % SIZE;
+    return sum % SIZE;
 }
 
-void insertTable(employeeTable empTable, employeeInfo emp) {
+int insertEmployee(employeeTable empTable, employeeInfo * emp) {
     int ctr, index, value = 0;
-    char id[8] = "";
-    for(ctr = 0, index = hash(emp.employee.empID); ctr < SIZE; ctr++) {
+    for(ctr = 0, index = hash(emp->employee.empID); ctr < SIZE; ctr++) {
         if(strcmp(empTable[index].employee.empID, "EMPTY") == 0) {
-            empTable[index] = emp;
+            empTable[index] = *emp;
             break;
         }
         index = (index%SIZE)+1;
     }
+    return ctr < SIZE ? 1 : 0; // returns 1 if successful and 0 if unsuccessful
 }
 
-int isMemberTable(employeeTable empTable, employeeInfo emp)
+int isMemberEmployee(employeeTable empTable, char empID[])
 {
     int ctr, index;
-    for(ctr = 0, index = hash(emp.employee.empID); ctr < SIZE && empTable[index].employee.empID != emp.employee.empID; ctr++){
+    for(ctr = 0, index = hash(empID); ctr < SIZE && empTable[index].employee.empID != empID; ctr++){
         if(strcmp(empTable[index].employee.empID, "EMPTY") == 0) {
             ctr = SIZE;
         }
         index = (index%SIZE)+1;
     }
-    return ctr < SIZE ? 1 : 0;
+    return ctr < SIZE ? 1 : 0; // returns 1 if employee exists and 0 if employee does not exist
 }
 
-int dateValidation(int month, int day, int year) // work in progress
+int assignEmployeeID(employeeTable empTable, employeeInfo * emp)
+{
+    int i;
+    char newID[8] = {0}, year[3], month[3], empNum[4]; // Employee ID format = year(2) month(2) increment(3) ex. 2203001
+    sprintf(year, "%02d", emp->employee.dateEmployed.year);
+    sprintf(month, "%02d", emp->employee.dateEmployed.month);
+    for(i = 1; i < 1000; i++) { // Increments if id is already taken
+        memset(newID, 0, 8); // Sets string to empty
+        strcat(newID, year);
+        strcat(newID, month);
+        sprintf(empNum, "%03d", i);
+        strcat(newID, empNum);
+        if(!isMemberEmployee(empTable, newID)) {
+            strcpy(emp->employee.empID, newID);
+            break;
+        }
+    }
+    return (i < 1000)? 1 : 0; // returns 1 if successful and 0 if unsuccessful
+}
+
+int dateValidation(int month, int day, int year)
 {
     int retval=0;
     int daysOfMonth[12]={31,28,31,30,31,30,31,31,30,31,30,31};
@@ -299,7 +321,7 @@ int addEmployee(employeeTable empTable) // returns 0 if unsuccessful and 1 if su
     char dateString[11];
     char emailString[32];
     char contactString[12];
-    int validFlag[9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
+    int validFlag[9] = {0};
     int retValue = 0;
     int exitFlag = 0;
     int month, day, year;
@@ -342,6 +364,7 @@ int addEmployee(employeeTable empTable) // returns 0 if unsuccessful and 1 if su
 
     while(!exitFlag)
     {
+        system("cls");
         printf("\n==========================================");
         printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
         printf("\n==========================================");
@@ -483,8 +506,17 @@ int addEmployee(employeeTable empTable) // returns 0 if unsuccessful and 1 if su
                 if(i == 6) { 
                     retValue = 1;
                     exitFlag = 1;
-                    insertTable(empTable, newEmployee);
-                    printf("Successfully created employee");
+                    if(assignEmployeeID(empTable, &newEmployee)) {
+                        if(insertEmployee(empTable, &newEmployee)) {
+                            printf("Successfully created employee");
+                        }
+                        else {
+                            printf("Employee Table is full\n");
+                        }
+                    }
+                    else {
+                        printf("Failed to assign Employee ID\n");
+                    }
                 }
                 else {
                     printf("Missing input at [%d]\n", i+1);
