@@ -44,7 +44,7 @@ typedef struct{
 
 typedef struct{
     char email[32];         // must have '@' and '.' for valid email
-    char phone[11];         // 11-digit mobile number
+    char phone[12];         // 11-digit mobile number
 }contactDetails;
 
 typedef struct{
@@ -105,7 +105,7 @@ int addEmployee();
 // 
 //
 
-int hash(char empID);
+int hash(char empID[]);
 // date manipulation functions
 
 
@@ -117,8 +117,8 @@ int main(){
     printf("\n==========================================");
     printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
     printf("\n==========================================");
-    initialize(); // ask for input of company name
-    addEmployee();
+    initialize(empTable); // ask for input of company name
+    addEmployee(empTable);
     /* MAIN MENU */
     
     /*
@@ -158,11 +158,40 @@ int main(){
  * @param -
  * @return -
  */
-void initialize(){
+void initialize(employeeTable empTable)
+{
+    /*Variable Declaration*/
+    // char companyName[32];
+    // int catcher;
+
+    // /*Clear the screen of Welcome" */
+    // printf("\nPress any key to start ");
+    // getch();
+    // printf("\e[1;1H\e[2J"); // Similar to clrscr() function. Can't use conio.h, only for _WIN32
+
+    // /*Start of the Program */
+    // printf("\nEnter Company Name: ");
+    // scanf("%s", &companyName);
+
+    // initEmpList(companyName);
+    // initAttendanceList(companyName);
+
+
     /* Variable declarations */
+
     /* Variable initializations */
+
     /* Body */
+
     /* Exit/return statement, if applicable */
+
+    int i;
+    for (i = 0; i < SIZE; i++) // loop for hash table initialization
+    {
+        strcpy(empTable[i].employee.empID, "EMPTY"); // sets each employee ID to EMPTY
+        empTable[i].history = NULL;                    // sets each head pointer to NULL
+        printf("%s", empTable[i].employee.empID);    // test
+    }
 }
 
 /**
@@ -177,9 +206,57 @@ void func1(int args1,int args2){
     /* Exit/return statement, if applicable */
 }
 
-int dateValidation(char date[]) // work in progress
+int hash(char empID[]) // String folding
 {
-    return 1;
+    int sum = 1, i;
+
+    for(i = 0; i < 7; i++) {
+        sum += sum * (int)empID[i];
+    }
+
+    return abs(sum) % SIZE;
+}
+
+void insertTable(employeeTable empTable, employeeInfo emp) {
+    int ctr, index, value = 0;
+    char id[8] = "";
+    for(ctr = 0, index = hash(emp.employee.empID); ctr < SIZE; ctr++) {
+        if(strcmp(empTable[index].employee.empID, "EMPTY") == 0) {
+            empTable[index] = emp;
+            break;
+        }
+        index = (index%SIZE)+1;
+    }
+}
+
+int isMemberTable(employeeTable empTable, employeeInfo emp)
+{
+    int ctr, index;
+    for(ctr = 0, index = hash(emp.employee.empID); ctr < SIZE && empTable[index].employee.empID != emp.employee.empID; ctr++){
+        if(strcmp(empTable[index].employee.empID, "EMPTY") == 0) {
+            ctr = SIZE;
+        }
+        index = (index%SIZE)+1;
+    }
+    return ctr < SIZE ? 1 : 0;
+}
+
+int dateValidation(int month, int day, int year) // work in progress
+{
+    int retval=0;
+    int daysOfMonth[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+
+    if(month>0&&month<13){
+    	printf("\nwhy\n");
+        if(month==2&&year%4==0){
+           if(daysOfMonth[month-1]+1>=day){
+            	retval=1;
+            } 
+        }else if(daysOfMonth[month-1]>=day){
+        	retval=1;
+        } 
+    }
+    return retval;
 }
 
 int emailValidation(char email[]) // magic code
@@ -211,17 +288,23 @@ int phoneValidation(char phone[])
     return (i == 11)? 1 : 0;
 }
 
-int addEmployee() // returns 0 if unsuccessful and 1 if successful
+int payValidation(float amount)
 {
-    
+	return (amount>0)?1:0;	
+}
+
+int addEmployee(employeeTable empTable) // returns 0 if unsuccessful and 1 if successful
+{
     char choice; // e = exit, c = create
     char dateString[11];
     char emailString[32];
-    char contactString[20];
-    int validFlag[6] = {0};
+    char contactString[12];
+    int validFlag[9] = {1, 1, 1, 1, 1, 1, 1, 1, 1};
     int retValue = 0;
     int exitFlag = 0;
-    int valid;
+    int month, day, year;
+    float basicSalary=0, overtimePay=0, contributions=0;
+    int status;
     int i;
 
     employeeInfo newEmployee = 
@@ -259,16 +342,19 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
 
     while(!exitFlag)
     {
-        system("cls");
         printf("\n==========================================");
         printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
         printf("\n==========================================");
-        printf("\n[1] Last Name:      \t%s", newEmployee.employee.name.LName);
-        printf("\n[2] First Name:     \t%s", newEmployee.employee.name.fName);
-        printf("\n[3] MI:             \t%c", newEmployee.employee.name.MI);
-        printf("\n[4] Date(MM/DD/YY): \t%02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
-        printf("\n[5] Email:          \t%s", newEmployee.employee.contact.email);
-        printf("\n[6] Contact No.:    \t%s", newEmployee.employee.contact.phone);
+        printf("\n[1] Last Name:            \t%s", newEmployee.employee.name.LName);
+        printf("\n[2] First Name:           \t%s", newEmployee.employee.name.fName);
+        printf("\n[3] MI:                   \t%c", newEmployee.employee.name.MI);
+        printf("\n[4] Date(MM/DD/YY):       \t%02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
+        printf("\n[5] Email:                \t%s", newEmployee.employee.contact.email);
+        printf("\n[6] Contact No.:          \t%s", newEmployee.employee.contact.phone);
+        printf("\n[7] Basic Salary:         \t%.02f", newEmployee.employee.details.basicSalary);
+        printf("\n[8] Overtime Pay:         \t%.02f", newEmployee.employee.details.overtimePay);
+        printf("\n[9] Total Contributions:  \t%.02f", newEmployee.employee.details.contributions);
+        printf("\n[0] Employee Status:      \t%s", (newEmployee.employee.status)?"Inactive":"Active");
         printf("\n==========================================");
         printf("\n[c] create employee | [e] exit ");
         printf("\n\nChoice: ");
@@ -296,54 +382,109 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
                 break;
 
             case '4':
-                printf("\nDateDate(MM/DD/YYYY): ");
+                printf("\nDateDate(MM/DD/YY): ");
                 scanf(" %s", dateString);
-                valid = dateValidation(dateString);
-                if(valid){
-                    char * token = strtok(dateString, "/");
-                    newEmployee.employee.dateEmployed.month = atoi(token);
-                    token = strtok(NULL, "/");
-                    newEmployee.employee.dateEmployed.day = atoi(token);
-                    token = strtok(NULL, "/");
-                    newEmployee.employee.dateEmployed.year = atoi(token);
+                
+                char * token = strtok(dateString, "/");
+                month = atoi(token);
+                token = strtok(NULL, "/");
+                day = atoi(token);
+                token = strtok(NULL, "/");
+                year = atoi(token);
+                
+                if(dateValidation(month, day, year)){
+                	getch();
+	                newEmployee.employee.dateEmployed.month = month;
+	                token = strtok(NULL, "/");
+	                newEmployee.employee.dateEmployed.day = day;
+	                token = strtok(NULL, "/");
+	                newEmployee.employee.dateEmployed.year = year;
+                    validFlag[3] = 1;
                 }
                 else {
                     printf("Invalid input\n");
                 }
-                validFlag[3] = valid;
+                
                 break;
 
             case '5':
                 printf("\nEmail: ");
                 scanf(" %s", emailString);              
-                valid = emailValidation(emailString);
-                if(valid) {
+                if(emailValidation(emailString)){
                     strcpy(newEmployee.employee.contact.email, emailString);
+                    validFlag[4] = 1;
                 }
                 else {
                     printf("Invalid Input\n");
                 }
-                validFlag[4] = valid;
+
                 break;
 
             case '6':
                 printf("\nContact No.: ");
                 scanf(" %s", contactString);
-                valid = phoneValidation(contactString);
-                if(valid) {
-                    strcpy(newEmployee.employee.contact.phone, contactString);      
+                if(phoneValidation(contactString)) {
+                    strcpy(newEmployee.employee.contact.phone, contactString);
+                    validFlag[5] = 1;   
                 }
                 else {
                     printf("Input invalid\n");
                 }
-                validFlag[5] = valid;
+                
                 break;
 
+			case '7':
+				printf("\nBasic Salary: ");
+				scanf(" %f", &basicSalary);
+				if(payValidation(basicSalary)){
+					newEmployee.employee.details.basicSalary=basicSalary;
+					validFlag[6] = 1;
+				}else{
+					printf("Input invalid");
+				}
+				break;
+				
+			case '8':
+				printf("\nOvertime Pay: ");
+				scanf(" %f", &overtimePay);
+				if(payValidation(overtimePay)){
+					newEmployee.employee.details.overtimePay=overtimePay;
+					validFlag[7] = 1;
+				}else{
+					printf("Input invalid");
+				}
+				break;
+				
+			case '9':
+				printf("\nTotal Contributions ");
+				scanf(" %f", &contributions);
+				if(payValidation(contributions)){
+					newEmployee.employee.details.contributions=contributions;
+					validFlag[8] = 1;
+				}else{
+					printf("Input invalid");
+				}
+				break;
+				
+			case '0':
+                printf("\n[0] Active");
+				printf("\n[1] Inactive");
+				printf("\nStatus: ");
+                scanf(" %c", &choice);
+                if(choice=='0'||choice=='1'){
+                        newEmployee.employee.status=choice-'0';
+                }else{
+                    printf("Invalid input");
+                }
+				break;
+				
             case 'c':
                 for(i = 0; validFlag[i] != 0 && i < 6; i++){}
                 if(i == 6) { 
                     retValue = 1;
                     exitFlag = 1;
+                    insertTable(empTable, newEmployee);
+                    printf("Successfully created employee");
                 }
                 else {
                     printf("Missing input at [%d]\n", i+1);
@@ -360,11 +501,6 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
 
         printf("\nPress any key to continue");
         getch();
-    }
-
-    if(retValue) 
-    {
-        printf("Successfully created employee");
     }
     
     getch();
