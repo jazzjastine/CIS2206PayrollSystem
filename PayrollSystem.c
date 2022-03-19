@@ -177,28 +177,30 @@ void func1(int args1,int args2){
     /* Exit/return statement, if applicable */
 }
 
-int dateValidation(char date[])
+int dateValidation(char date[]) // work in progress
 {
-    
+    return 1;
 }
 
-int emailValidation(char email[])
+int emailValidation(char email[]) // magic code
 {
     int emailCheck = 0;
     int i;
 
-    for(i = 0; email[i]!='\0'; i++){
-        if(!emailCheck && email[i]=='@'&& i!=0) {
+    for(i = 0; email[i] != '\0'; i++){
+        if(!emailCheck && email[i] == '@' && i != 0) {
             emailCheck++;
         }
-        else if(email[i]=='@'){
-            emailCheck=0;
+        else if(email[i] == '@'){
+            emailCheck = 0;
         }
-        if(emailCheck && email[i]=='.' && email[i-1]!='@') {
-            emailCheck=(email[i-1]!='@')?0:emailCheck+1;
+        if(emailCheck && email[i] == '.') {
+            emailCheck = (email[i-1] != '@')? emailCheck+1 : 0;
+
         }
     }
 
+    printf("emailcheckfinal: %d", emailCheck);
     return (emailCheck >= 2)? 1 : 0;
 }
 
@@ -213,13 +215,13 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
 {
     
     char choice; // e = exit, c = create
-    char miString[5];
     char dateString[11];
     char emailString[32];
     char contactString[20];
-    int validFlag[6];
+    int validFlag[6] = {0};
     int retValue = 0;
     int exitFlag = 0;
+    int valid;
     int i;
 
     employeeInfo newEmployee = 
@@ -256,87 +258,83 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
 
     while(!exitFlag)
     {
-        system("cls");
         printf("\n==========================================");
         printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
         printf("\n==========================================");
-        printf("\n[1] Last Name: %s", newEmployee.employee.name.LName);
-        printf("\n[2] First Name: %s", newEmployee.employee.name.fName);
-        printf("\n[3] MI: %c", newEmployee.employee.name.MI);
-        printf("\n[4] Date(MM/DD/YY): %02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
-        printf("\n[5] Email: %s", newEmployee.employee.contact.email);
-        printf("\n[6] Contact No.: %s", newEmployee.employee.contact.phone);
+        printf("\n[1] Last Name:      \t%s", newEmployee.employee.name.LName);
+        printf("\n[2] First Name:     \t%s", newEmployee.employee.name.fName);
+        printf("\n[3] MI:             \t%c", newEmployee.employee.name.MI);
+        printf("\n[4] Date(MM/DD/YY): \t%02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
+        printf("\n[5] Email:          \t%s", newEmployee.employee.contact.email);
+        printf("\n[6] Contact No.:    \t%s", newEmployee.employee.contact.phone);
         printf("\ne = to exit, c = to create employee ");
         printf("\n==========================================");
-        
         printf("\nChoice: ");
         scanf(" %c",&choice);
-        system("cls");
+        getchar();
         switch(choice) 
         {
             case '1':
                 printf("\nLast Name: ");
                 scanf(" %s", newEmployee.employee.name.LName);
                 validFlag[0] = 1;
-
                 break;
                 
             case '2':
                 printf("\nFirst Name: ");
                 scanf(" %s", newEmployee.employee.name.fName);
                 validFlag[1] = 1;
-
                 break;
                 
             case '3':
                 printf("\nMiddle Initial: ");
-                scanf(" %c", miString);
-                if(isalpha(miString[0])){
-                    validFlag[2] = 1;
-                    newEmployee.employee.name.MI=miString[0];
-                }else{
-                    printf("Invalid input");
-                }
-
+                scanf(" %c", &newEmployee.employee.name.MI);
+                getchar();
+                validFlag[2] = 1;
                 break;
 
             case '4':
                 printf("\nDateDate(MM/DD/YYYY): ");
                 scanf(" %s", dateString);
-                char * token = strtok(dateString, "/");
-                newEmployee.employee.dateEmployed.month = atoi(token);
-                token = strtok(NULL, "/");
-                newEmployee.employee.dateEmployed.day = atoi(token);
-                token = strtok(NULL, "/");
-                newEmployee.employee.dateEmployed.year = atoi(token);
-                validFlag[3] = 1;
-
+                valid = dateValidation(dateString);
+                if(valid){
+                    char * token = strtok(dateString, "/");
+                    newEmployee.employee.dateEmployed.month = atoi(token);
+                    token = strtok(NULL, "/");
+                    newEmployee.employee.dateEmployed.day = atoi(token);
+                    token = strtok(NULL, "/");
+                    newEmployee.employee.dateEmployed.year = atoi(token);
+                }
+                else {
+                    printf("Invalid input\n");
+                }
+                validFlag[3] = valid;
                 break;
 
             case '5':
                 printf("\nEmail: ");
                 scanf(" %s", emailString);              
-                int valid = emailValidation(emailString);
+                valid = emailValidation(emailString);
                 if(valid) {
                     strcpy(newEmployee.employee.contact.email, emailString);
-                    validFlag[4] = 1;
                 }
                 else {
-                    printf("Invalid Input");
+                    printf("Invalid Input\n");
                 }
+                validFlag[4] = valid;
                 break;
 
             case '6':
                 printf("\nContact No.: ");
                 scanf(" %s", contactString);
-                int valid = phoneValidation(contactString);
+                valid = phoneValidation(contactString);
                 if(valid) {
-                    strcpy(newEmployee.employee.contact.phone, contactString);
-                    validFlag[5] = 1;
+                    strcpy(newEmployee.employee.contact.phone, contactString);      
                 }
                 else {
-                    printf("Input invalid");
+                    printf("Input invalid\n");
                 }
+                validFlag[5] = valid;
                 break;
 
             case 'c':
@@ -346,21 +344,19 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
                     exitFlag = 1;
                 }
                 else {
-                    printf("Missing input at [%d]", i+1);
+                    printf("Missing input at [%d]\n", i+1);
                 }
-
                 break;
 
             case 'e':
                 exitFlag = 1;
-
                 break;
 
             default:
-                printf("Not a valid choice!");
+                printf("Not a valid choice!\n");
         }
 
-        printf("Press any key to continue");
+        printf("\nPress any key to continue");
         getch();
     }
 
