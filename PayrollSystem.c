@@ -13,6 +13,7 @@
 #include<string.h>
 #include<stdlib.h>
 #include<ctype.h>
+#include<conio.h>
 
 /***** CONSTANTS *****/
 #define SIZE 512                    // hash table size
@@ -146,8 +147,7 @@ int main(){
         Exit
             Confirm exit
     */
-    addEmployee();
-    getch();
+   getch();
     return 0;
 }
 
@@ -177,6 +177,38 @@ void func1(int args1,int args2){
     /* Exit/return statement, if applicable */
 }
 
+int dateValidation(char date[])
+{
+    
+}
+
+int emailValidation(char email[])
+{
+    int emailCheck = 0;
+    int i;
+
+    for(i = 0; email[i]!='\0'; i++){
+        if(!emailCheck && email[i]=='@'&& i!=0) {
+            emailCheck++;
+        }
+        else if(email[i]=='@'){
+            emailCheck=0;
+        }
+        if(emailCheck && email[i]=='.' && email[i-1]!='@') {
+            emailCheck=(email[i-1]!='@')?0:emailCheck+1;
+        }
+    }
+
+    return (emailCheck >= 2)? 1 : 0;
+}
+
+int phoneValidation(char phone[])
+{
+    int i;
+    for(i = 0; phone[i]!='\0' && isdigit(phone[i]); i++){}
+    return (i == 11)? 1 : 0;
+}
+
 int addEmployee() // returns 0 if unsuccessful and 1 if successful
 {
     
@@ -185,7 +217,6 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
     char dateString[11];
     char emailString[32];
     char contactString[20];
-    int emailCheck = 0;
     int validFlag[6];
     int retValue = 0;
     int exitFlag = 0;
@@ -284,42 +315,28 @@ int addEmployee() // returns 0 if unsuccessful and 1 if successful
 
             case '5':
                 printf("\nEmail: ");
-                scanf(" %s", emailString);
-                for(i = 0; emailString[i]!='\0'; i++){
-                    if(!emailCheck && emailString[i]=='@'&& i!=0) {
-                        emailCheck++;
-                    }
-                    else if(emailString[i]=='@'){
-                    	emailCheck=0;
-					}
-                    if(emailCheck && emailString[i]=='.' && emailString[i-1]!='@') {
-                    	emailCheck=(emailString[i-1]!='@')?0:emailCheck+1;
-                    }
-                }
-                if(emailCheck >= 2) {
-                	printf("emailCheck: %d\n",emailCheck);
+                scanf(" %s", emailString);              
+                int valid = emailValidation(emailString);
+                if(valid) {
                     strcpy(newEmployee.employee.contact.email, emailString);
                     validFlag[4] = 1;
                 }
                 else {
-                	printf("emailCheck: %d\n",emailCheck);
                     printf("Invalid Input");
                 }
-                emailCheck=0;
                 break;
 
             case '6':
                 printf("\nContact No.: ");
                 scanf(" %s", contactString);
-                for(i = 0; contactString[i]!='\0' && isdigit(contactString[i]); i++){}
-                if(i == 11) {
+                int valid = phoneValidation(contactString);
+                if(valid) {
                     strcpy(newEmployee.employee.contact.phone, contactString);
                     validFlag[5] = 1;
                 }
                 else {
                     printf("Input invalid");
                 }
-
                 break;
 
             case 'c':
