@@ -180,8 +180,8 @@ void func1(int args1,int args2){
     /* Exit/return statement, if applicable */
 }
 
-void createPayroll()
-{
+void createPayroll(){
+    long diff;
     char group[10];
     char *payrollID;
     dateDetails start_date ,end_date;
@@ -196,9 +196,50 @@ void createPayroll()
     // generate Payroll ID
     payrollID = generatePayrollID(group,start_date);
     puts(payrollID);
-
     
+    //date difference
+    diff = dateDiff(start_date,end_date);
+    printf("\n\n Date difference is %d days\n",diff);
+
 }
+
+long dateDiff(dateDetails s,dateDetails e){
+  long num ;
+  num =dayOfYear(e) - dayOfYear(s);
+  if(s.year != e.year){
+    if(s.year < e.year){
+      num  += checkYear(s.year,e.year);
+    }else{
+      num  -= checkYear(e.year,s.year);
+    }
+  }
+  return num ;
+}
+
+long checkYear(int xyr,int yyr){ 
+  long jj,bb;
+  bb=0;
+  for(jj= xyr;jj<yyr;jj++){
+    bb+=365;
+    if(((((jj%400)==0)||((jj%100)!=0))
+      &&((jj%4)==0))) bb+=1;
+  }
+  return(bb);
+}
+
+long dayOfYear(dateDetails date){ 
+    long a,r[13];
+
+    r[1] = 0; r[2] = 31; r[3] = 59;
+    r[4] = 90; r[5] = 120; r[6] = 151;
+    r[7] = 181; r[8] = 212; r[9] = 243;
+    r[10]= 273; r[11]= 304; r[12]= 334;
+    a=r[date.month]+date.day;
+    if(((((date.year%400)==0)||((date.year%100)!=0))
+        &&((date.year%4)==0))&&(date.month>2)) a+=1;
+    return(a);
+}
+
 
 char * generatePayrollID(char group[],dateDetails date){
     char *payrollID = (char *) malloc(sizeof(char)*6);

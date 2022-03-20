@@ -28,16 +28,17 @@ Search employee
 
 
 
-Input payroll
-Enter Department/Group #
-Enter start date
-Enter end date
-     - Generate Payroll id - YYMMP[Department] - 22011A
-     - date format constraint: MM/DD/YYYY
-     - create algorithm to determine day difference
+✓ Input payroll
+✓ Enter Department/Group #
+✓ Enter start date
+✓ Enter end date
+✓ - Generate Payroll id - YYMMP[Department] - 22011A
+✓ - date format constraint: MM/DD/YYYY
+✓ - create algorithm to determine day difference
      - compute for no. of working days. 
      - Have a separate list of public holidays
        embed them in the function being used.
+
 Enter attendance info for each ACTIVE employee in the group
      - no. days absent, hours overtime, mins undertime
 
