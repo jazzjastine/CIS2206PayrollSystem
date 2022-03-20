@@ -281,7 +281,7 @@ int assignEmployeeID(employeeTable empTable, employeeInfo * emp)
 }
 
 /**
- * @brief Checks if date is valid
+ * @brief checks if date is valid
  * @param month, day, and year
  * @return returns 1 if valid and 0 if invalid
  */
@@ -303,7 +303,7 @@ int dateValidation(int month, int day, int year)
 }
 
 /**
- * @brief Checks if email is valid
+ * @brief checks if email is valid
  * @param email string
  * @return returns 1 if valid and 0 if invalid
  */
@@ -337,7 +337,7 @@ int emailValidation(char email[]) /* magic code, sorry daan wayne hahaha */
 }
 
 /**
- * @brief Checks if phone number is valid
+ * @brief checks if phone number is valid
  * @param phone string
  * @return returns 1 if valid and 0 if invalid
  */
@@ -349,7 +349,7 @@ int phoneValidation(char phone[])
 }
 
 /**
- * @brief Checks if salary or payment is valid
+ * @brief checks if salary or payment is valid
  * @param amount
  * @return returns 1 if valid and 0 if invalid
  */
