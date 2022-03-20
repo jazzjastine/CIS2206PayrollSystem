@@ -102,6 +102,9 @@ int loadData();
 void createPayroll();
 dateDetails getDate();
 char * generatePayrollID(char group[],dateDetails date);
+long dateDiff(dateDetails s,dateDetails e);
+long checkYear(int xyr,int yyr);
+long dayOfYear(dateDetails date);
 //
 
 int hash(char empID);
@@ -201,7 +204,10 @@ void createPayroll(){
     diff = dateDiff(start_date,end_date);
     printf("\n\n Date difference is %d days\n",diff);
 
+    
+
 }
+
 
 long dateDiff(dateDetails s,dateDetails e){
   long num ;
