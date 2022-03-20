@@ -15,9 +15,9 @@
 
 /***** CONSTANTS *****/
 #define SIZE 512                    // hash table size
-#define EMP_FILENAME 'EmployeeFile.bin'
-#define ATT_FILENAME 'AttendanceFile.bin'
-#define PAY_FILENAME 'PayrollIDList.bin'
+#define EMP_FILENAME "EmployeeFile.bin"
+#define ATT_FILENAME "AttendanceFile.bin"
+#define PAY_FILENAME "PayrollIDList.bin"
 /* Note: Actual file names will be '<CompanyName>_EmployeeFile.bin'. 
  * Company name will be inputted at main menu upon program and data initialization.
  */
@@ -35,7 +35,7 @@ typedef enum{
 }empStatus;
 
 typedef struct{
-    unsigned int year:7;    // YY
+    unsigned int year:11;    // YY
     unsigned int month:4;   // MM
     unsigned int day:5;     // DD
 }dateDetails;                      // CONSTRAINT: No negative values
@@ -99,8 +99,9 @@ int loadData();
 
 // addEmployee();
 // editEmployee(char empID[], int mode);
-// createPayroll();
-// 
+void createPayroll();
+dateDetails getDate();
+char * generatePayrollID(char group[],dateDetails date);
 //
 
 int hash(char empID);
@@ -147,7 +148,9 @@ int main(){
             Confirm exit
     */
 
-    getch();
+   createPayroll();
+
+    // getch();
     return 0;
 }
 
@@ -175,4 +178,55 @@ void func1(int args1,int args2){
     /* Variable initializations */
     /* Body */
     /* Exit/return statement, if applicable */
+}
+
+void createPayroll()
+{
+    char group[10];
+    char *payrollID;
+    dateDetails start_date ,end_date;
+
+    printf("\nEnter Department/Group #: ");
+    gets(group);
+    printf("\nEnter Start Date [MM/DD/YYYY]: ");  
+    start_date = getDate();
+    printf("\nEnter End Date [MM/DD/YYYY]: ");  
+    end_date = getDate();
+ 
+    // generate Payroll ID
+    payrollID = generatePayrollID(group,start_date);
+    puts(payrollID);
+
+    
+}
+
+char * generatePayrollID(char group[],dateDetails date){
+    char *payrollID = (char *) malloc(sizeof(char)*6);
+    char smon[5],syear[5],mon[5] ="0";
+    itoa(date.year,syear,10);
+    itoa(date.month,smon,10);
+
+    strncpy(payrollID, syear + 2,3);
+    if(date.month < 10){
+        strcat(mon,smon);
+        strcat(payrollID,mon);
+    }else{
+        strcat(payrollID,smon);
+    }
+    strcat(payrollID,group);
+    
+    return payrollID;
+}
+
+dateDetails getDate(){
+    unsigned int mon,day,year;
+    dateDetails retval;
+
+    scanf("%d/%d/%d",&mon,&day,&year);
+
+    retval.day = day;
+    retval.month = mon;
+    retval.year = year;
+
+    return retval;
 }
