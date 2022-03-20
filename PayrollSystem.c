@@ -214,10 +214,8 @@ void func1(int args1,int args2){
 int hash(char empID[8])
 {
     int i;
-    char hello;
     unsigned long sum = 1;
     for(i = 0; i < 7; i++) { 
-        hello = empID[i];
         sum += sum * empID[i];
     }
     return sum % SIZE;
