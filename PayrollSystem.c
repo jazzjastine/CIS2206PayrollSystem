@@ -102,7 +102,7 @@ typedef struct
 typedef employeeInfo employeeTable[SIZE]; // constant hash table
 
 /***** FUNCTION PROTOTYPES *****/
-int initialize(employeeTable empTable, char companyName[]); 
+void initialize(employeeTable empTable, char companyName[]); 
 int initEmpList(employeeTable empTable, char companyName[]); 
 int initAttendanceList(employeeTable empTable, char companyName[]);
 
@@ -114,6 +114,7 @@ int insertEmployeeToFile(char companyName[], employeeInfo emp);
 int insertAttendanceToFile(char companyName[], attendanceDetails att);
 
 int assignEmployeeID(employeeTable empTable, employeeInfo *emp);
+int nameValidation(char name[]);
 int dateValidation(int month, int day, int year);
 int emailValidation(char email[]);
 int phoneValidation(char phone[]);
@@ -152,60 +153,67 @@ int main()
     char companyName[32];
 
     /* Variable declarations */
-    int choice; // for switch statement main menu
+    char choice; // for switch statement main menu
     int status; // to check if operation was successful
-
-    printf("\n==========================================");
-    printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
-    printf("\n         Version 1.0 - 3/21/2022          ");
-    printf("\n==========================================");
+	
+    printf("\n===================================================");
+    printf("\n|                     Welcome!                    |");
+    printf("\n|            CIS 2206 - PAYROLL SYSTEM            |");
+    printf("\n|             Version 1.0 - 3/21/2022             |");
+    printf("\n|                                                 |");
+    printf("\n| Developers: C. Stewart, J. Leano, J. Samson,    |");
+    printf("\n|             J. Rosales, J. Tejada, I. Monzales, |");
+    printf("\n|             J. Guzman, E. Celdran, I. Woogue,   |");
+    printf("\n|             M. Valeros, W. Dayata               |");
+    printf("\n===================================================");
 
     /*Start of the Program */
-    printf("\nEnter Company Name: ");
-    scanf("%s", &companyName);
+    printf("\n\nEnter Company Name: ");
+    gets(companyName);
     initialize(empTable, companyName); // ask for input of company name
     /* Body */
     do
     {
-        printf("\e[1;1H\e[2J"); // Similar to clrscr() function. Can't use conio.h, only for _WIN32
+        system("cls");
+		printf("\n==========================================");
+        printf("\n                MAIN MENU                 ");
         printf("\n==========================================");
-        printf("\n                Main Menu                 ");
+        printf("\n| [ 1 ]      Add New Employee            |");
+        printf("\n| [ 2 ]      View Employee List          |");
+        printf("\n| [ 3 ]      View Specific Employee      |");
+        printf("\n| [ 4 ]      Edit Employee Detais        |");
+        printf("\n| [ 5 ]      Create Payroll              |");
+        printf("\n| [ 6 ]      Exit                        |");
         printf("\n==========================================");
-        printf("\n||  1  ||   Create Employee             ||");
-        printf("\n||  2  ||   View Employee List          ||");
-        printf("\n||  3  ||   View Specific Employee      ||");
-        printf("\n||  4  ||   Edit Employee Detais        ||");
-        printf("\n||  5  ||   Create Payroll              ||");
-        printf("\n||  0  ||   Exit                        ||");
         printf("\n\nYour Choice: ");
 
-        scanf("%d", &choice);
+		fflush(stdin);
+        scanf("%c", &choice);
 
         switch (choice)
         {
-        case 1:
+        case '1':
             addEmployee(empTable, companyName);
             break;
-        case 2:
-            viewEmployeeList();
+        case '2':
+            //viewEmployeeList();
             break;
-        case 3:
-            viewEmployee();
+        case '3':
+            //viewEmployee();
             break;
-        case 4:
-            editEmployee();
+        case '4':
+            //editEmployee();
             break;
-        case 5:
-            createPayroll();
+        case '5':
+            //createPayroll();
             break;
-        case 0:
-            confirmExit();
+        case '0':
             break;
         default:
             printf("\nInvalid Choice - Please use digits only");
             break;
         }
-    } while (choice != 0);
+    } while (choice != '0');
 
     /* Exit/return statement, if applicable */
 
@@ -218,23 +226,70 @@ int main()
 /**
  * @brief initializes the data and loads the file, sets up the internal memory
  * @param - gets pointer of employeeTable to initialize with the company name
- * @return - number of employee records read
+ * @return - implicit return
  */
-int initialize(employeeTable empTable, char companyName[])
+void initialize(employeeTable empTable, char companyName[])
 {
     int i; // counter
-    int empCount;
+    int empCount, attCount;
+    int exit = 0;
+    char newChoice;
+    char fileName[40];
+    FILE *fp;
 
     for (i = 0; i < SIZE; i++) // loop for hash table initialization
     {
         strcpy(empTable[i].employee.empID, "EMPTY"); // sets each employee ID to EMPTY
         empTable[i].history = NULL;                  // sets each head pointer to NULL
     }
+	
+	while(exit == 0){
+		empCount = initEmpList(empTable, companyName);
+    	attCount = initAttendanceList(empTable, companyName);
 
-    empCount = initEmpList(empTable, companyName);
-    initAttendanceList(empTable, companyName);
-
-    return empCount;
+    	if(empCount == -1){
+    		printf("\nNo files found. Proceed to create new files?");
+    		printf("\n[ 1 ] Yes");
+    		printf("\n[ 2 ] No");
+    		printf("\n\nChoice: ");
+    		do{
+				fflush(stdin);
+    			scanf("%c",&newChoice);
+	    		switch(newChoice){
+    				case '1':
+    					strcpy(fileName,companyName);
+    					strcat(fileName,EMP_FILENAME);
+    					fp = fopen(fileName,"wb");
+    					if(fp!=NULL){
+	    					fclose(fp);
+    						strcpy(fileName,"");
+    						strcpy(fileName,companyName);
+    						strcat(fileName,ATT_FILENAME);
+    						fp = fopen(fileName,"wb");
+    						if(fp!=NULL){
+    							fclose(fp);
+    							printf("\nFiles successfully created.");
+    							exit = 1;
+							}
+						}
+						break;
+					case '2':
+						printf("\nEnter company name: ");
+						fflush(stdin);
+						gets(companyName);
+    					break;
+    				default:
+    					printf("\nInvalid choice. Please try again.");
+				}
+			}while(newChoice != '1' && newChoice !='2');
+		} else {
+			printf("\nFiles loaded. %d employee and %d attendance entries found.",empCount,attCount);
+			exit = 1;
+		}
+	}
+    
+	printf("\nPress any key to proceed to main menu.");
+	getch();
 }
 
 
@@ -249,7 +304,7 @@ int initEmpList(employeeTable empTable, char companyName[])
     employeeInfo catcher;
     catcher.history = NULL;
     int count = 0;
-    char fileName;
+    char fileName[40];
 
     strcpy(fileName, companyName);
     strcat(fileName, EMP_FILENAME);
@@ -267,9 +322,6 @@ int initEmpList(employeeTable empTable, char companyName[])
     else
     { // Means that company is new and not yet created.
         count = -1;
-        printf("No file found. A new employee file will be created");
-        fp = fopen(fileName, "w");
-        fclose(fp);
     }
     return count;
 }
@@ -284,7 +336,7 @@ int initAttendanceList(employeeTable empTable, char companyName[])
     FILE *fp;
     attendanceDetails catcher;
     int count = 0;
-    char fileName;
+    char fileName[40];
 
     strcpy(fileName, companyName);
     strcat(fileName, ATT_FILENAME);
@@ -303,8 +355,7 @@ int initAttendanceList(employeeTable empTable, char companyName[])
     {
         // Means that company is new and not yet created.
         count = -1;
-        printf("No file found. A new attendance file will be created");
-        fp = fopen(fileName, "w");
+        fp = fopen(fileName,"wb");
         fclose(fp);
     }
     return count;
@@ -377,7 +428,7 @@ int insertAttendance(employeeTable empTable, attendanceDetails att)
     int index = searchEmployee(empTable,att.empID);
     if(index != -1){
         // traverse linked list (sorted in reverse order)
-        for(ptr = &empTable[index].history; *ptr != NULL && strcmp((*ptr)->attendance.payrollID,att.payrollID > 0); ptr=&(*ptr)->link) {}
+        for(ptr = &empTable[index].history; *ptr != NULL && strcmp((*ptr)->attendance.payrollID,att.payrollID) > 0; ptr=&(*ptr)->link) {}
         temp = (List)malloc(sizeof(struct cell));
         if(temp != NULL){
             temp->attendance = att;
@@ -399,7 +450,7 @@ int insertEmployeeToFile(char companyName[], employeeInfo emp)
     int retVal = 0;
     FILE *fp;
     employeeDetails newEmployee;
-    char fileName;
+    char fileName[40];
 
     strcpy(fileName, companyName);
     strcat(fileName, EMP_FILENAME);
@@ -425,7 +476,7 @@ int insertAttendanceToFile(char companyName[], attendanceDetails att)
 {
     int retVal = 0;
     FILE *fp;
-    char fileName;
+    char fileName[40];
 
     strcpy(fileName, companyName);
     strcat(fileName, ATT_FILENAME);
@@ -466,6 +517,17 @@ int assignEmployeeID(employeeTable empTable, employeeInfo *emp)
         }
     }
     return (i < 1000) ? 1 : 0;
+}
+
+/**
+ * @brief checks if name is valid (only alphabet characters and spaces)
+ * @param name
+ * @return returns 1 if valid and 0 if invalid
+ */
+int nameValidation(char name[]){
+	int x;
+	for(x = 0; name[x]!='\0' && (isalpha(name[x])!=0 || isspace(name[x])!=0); x++){}
+	return (name[x]=='\0') ? 1 : 0;
 }
 
 /**
@@ -609,20 +671,20 @@ int addEmployee(employeeTable empTable, char companyName[])
 
     while (!exitFlag) /* Loop until the exit flag is changed */
     {
-        // system("cls");
+        system("cls");
         printf("\n==========================================");
-        printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
+        printf("\n            CREATE NEW EMPLOYEE	        ");
         printf("\n==========================================");
-        printf("\n[1] Last Name:            \t%s", newEmployee.employee.name.LName);
-        printf("\n[2] First Name:           \t%s", newEmployee.employee.name.fName);
-        printf("\n[3] MI:                   \t%c.", newEmployee.employee.name.MI);
-        printf("\n[4] Date(MM/DD/YY):       \t%02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
-        printf("\n[5] Email:                \t%s", newEmployee.employee.contact.email);
-        printf("\n[6] Contact No.:          \t%s", newEmployee.employee.contact.phone);
-        printf("\n[7] Basic Salary:         \t%.02f", newEmployee.employee.details.basicSalary);
-        printf("\n[8] Overtime Pay:         \t%.02f", newEmployee.employee.details.overtimePay);
-        printf("\n[9] Total Contributions:  \t%.02f", newEmployee.employee.details.contributions);
-        printf("\n[0] Employee Status:      \t%s", (newEmployee.employee.status) ? "Inactive" : "Active");
+        printf("\n[ 1 ] Last Name:            \t%s", newEmployee.employee.name.LName);
+        printf("\n[ 2 ] First Name:           \t%s", newEmployee.employee.name.fName);
+        printf("\n[ 3 ] MI:                   \t%c.", newEmployee.employee.name.MI);
+        printf("\n[ 4 ] Date(MM/DD/YY):       \t%02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
+        printf("\n[ 5 ] Email:                \t%s", newEmployee.employee.contact.email);
+        printf("\n[ 6 ] Contact No.:          \t%s", newEmployee.employee.contact.phone);
+        printf("\n[ 7 ] Basic Salary:         \t%.02f", newEmployee.employee.details.basicSalary);
+        printf("\n[ 8 ] Overtime Pay:         \t%.02f", newEmployee.employee.details.overtimePay);
+        printf("\n[ 9 ] Total Contributions:  \t%.02f", newEmployee.employee.details.contributions);
+        printf("\n[ 0 ] Employee Status:      \t%s", (newEmployee.employee.status) ? "Inactive" : "Active");
         printf("\n==========================================");
         printf("\n[c] create employee | [e] exit ");
         printf("\n\nChoice: ");
@@ -635,32 +697,59 @@ int addEmployee(employeeTable empTable, char companyName[])
         {
         case '1':
             printf("\nLast Name: ");
-            getchar();
+            fflush(stdin);
             gets(newEmployee.employee.name.LName);
-            // nameUpper(newEmployee.employee.name.LName);
-            validFlag[0] = 1;
+            if(nameValidation(newEmployee.employee.name.LName)){
+            	validFlag[0] = 1;
+			}
+			else
+			{
+				strcpy(newEmployee.employee.name.LName,"");
+				printf("Invalid input\n");
+                printf("\nPress any key to continue");
+        		getch();
+			}
             break;
 
         case '2':
             printf("\nFirst Name: ");
-            getchar();
+            fflush(stdin);
             gets(newEmployee.employee.name.fName);
-            // nameUpper(newEmployee.employee.name.fName);
-            validFlag[1] = 1;
+            if(nameValidation(newEmployee.employee.name.fName)){
+            	validFlag[1] = 1;
+			}
+			else
+			{
+				strcpy(newEmployee.employee.name.fName,"");
+				printf("Invalid input\n");
+                printf("\nPress any key to continue");
+        		getch();
+			}
+            break;
             break;
 
         case '3':
             printf("\nMiddle Initial: ");
-            scanf(" %c", &newEmployee.employee.name.MI);
-            while ((ch = getchar()) != '\n' && ch != EOF)
-                ;
-            newEmployee.employee.name.MI = toupper(newEmployee.employee.name.MI);
-            validFlag[2] = 1;
+            fflush(stdin);
+            scanf("%c", &newEmployee.employee.name.MI);
+            while ((ch = getchar()) != '\n' && ch != EOF);
+            if(isalpha(newEmployee.employee.name.MI) || isspace(newEmployee.employee.name.MI)){
+            	newEmployee.employee.name.MI = toupper(newEmployee.employee.name.MI);
+            	validFlag[2] = 1;
+			}
+			else
+			{
+				newEmployee.employee.name.MI=' ';
+				printf("Invalid input\n");
+                printf("\nPress any key to continue");
+        		getch();
+			}
+            
             break;
 
         case '4':
             printf("\nDate employed(MM/DD/YY): ");
-            getchar();
+            fflush(stdin);
             gets(dateString);
 
             char *token = strtok(dateString, "/"); /* separates date by '/' */
@@ -682,13 +771,15 @@ int addEmployee(employeeTable empTable, char companyName[])
             else
             {
                 printf("Invalid input\n");
+                printf("\nPress any key to continue");
+        		getch();
             }
 
             break;
 
         case '5':
             printf("\nEmail: ");
-            getchar();
+            fflush(stdin);
             gets(emailString);
             if (emailValidation(emailString))
             {
@@ -697,14 +788,16 @@ int addEmployee(employeeTable empTable, char companyName[])
             }
             else
             {
-                printf("Invalid Input\n");
+                printf("Invalid Input");
+                printf("\nPress any key to continue");
+        		getch();
             }
 
             break;
 
         case '6':
             printf("\nContact No.: ");
-            getchar();
+            fflush(stdin);
             gets(contactString);
             if (phoneValidation(contactString))
             {
@@ -713,14 +806,17 @@ int addEmployee(employeeTable empTable, char companyName[])
             }
             else
             {
-                printf("Input invalid\n");
+                printf("Input invalid");
+                printf("\nPress any key to continue");
+        		getch();
             }
 
             break;
 
         case '7':
             printf("\nBasic Salary: ");
-            scanf(" %f", &basicSalary);
+            fflush(stdin);
+            scanf("%f", &basicSalary);
             if (payValidation(basicSalary))
             {
                 newEmployee.employee.details.basicSalary = basicSalary;
@@ -729,12 +825,15 @@ int addEmployee(employeeTable empTable, char companyName[])
             else
             {
                 printf("Input invalid");
+                printf("\nPress any key to continue");
+        		getch();
             }
             break;
 
         case '8':
             printf("\nOvertime Pay: ");
-            scanf(" %f", &overtimePay);
+            fflush(stdin);
+            scanf("%f", &overtimePay);
             if (payValidation(overtimePay))
             {
                 newEmployee.employee.details.overtimePay = overtimePay;
@@ -742,13 +841,16 @@ int addEmployee(employeeTable empTable, char companyName[])
             }
             else
             {
-                printf("Input invalid");
+                printf("Input invalid - please enter a positive amount");
+                printf("\nPress any key to continue");
+        		getch();
             }
             break;
 
         case '9':
             printf("\nTotal Contributions: ");
-            scanf(" %f", &contributions);
+            fflush(stdin);
+            scanf("%f", &contributions);
             if (payValidation(contributions))
             {
                 newEmployee.employee.details.contributions = contributions;
@@ -756,17 +858,19 @@ int addEmployee(employeeTable empTable, char companyName[])
             }
             else
             {
-                printf("Input invalid");
+                printf("Input invalid - please enter a positive amount");
+                printf("\nPress any key to continue");
+        		getch();
             }
             break;
 
         case '0':
-            printf("\n[0] Active");
-            printf("\n[1] Inactive");
+            printf("\n[ 0 ] Active");
+            printf("\n[ 1 ] Inactive");
             printf("\nStatus: ");
-            scanf(" %c", &choice);
-            while ((ch = getchar()) != '\n' && ch != EOF)
-                ;
+            fflush(stdin);
+            scanf("%c", &choice);
+            while ((ch = getchar()) != '\n' && ch != EOF);
             if (choice == '0' || choice == '1')
             { /*check if input is valid*/
                 newEmployee.employee.status = choice - '0';
@@ -774,31 +878,40 @@ int addEmployee(employeeTable empTable, char companyName[])
             else
             {
                 printf("Invalid input");
+                printf("\nPress any key to continue");
+        		getch();
             }
             break;
 
         case 'c':
-            for (i = 0; validFlag[i] != 0 && i < 6; i++)
+            for (i = 0; validFlag[i] != 0 && i < 9; i++)
             {
             }
-            if (i == 6)
+            if (i == 9)
             {
                 if (assignEmployeeID(empTable, &newEmployee))
                 {
                     if (insertEmployee(empTable, newEmployee) && insertEmployeeToFile(companyName, newEmployee))
                     {
-                        printf("Successfully created employee");
+                        printf("\nSuccessfully created employee!");
+                        printf("\nYour employee ID is %s",newEmployee.employee.empID);
+                        printf("\n\nPress any key to continue");
+        				getch();
                         retValue = 1;
                     }
                     else
                     {
                         printf("Employee Table is full\n");
+                        printf("\nPress any key to continue");
+        				getch();
                         retValue = 0;
                     }
                 }
                 else
                 {
-                    printf("Failed to assign Employee ID\n");                    
+                    printf("Error: Failed to assign Employee ID\n"); 
+					printf("\nPress any key to continue");
+        			getch();                   
                     retValue = 0;
                 }
                 exitFlag = 1; /* prompts to exit the loop */
@@ -806,6 +919,8 @@ int addEmployee(employeeTable empTable, char companyName[])
             else
             {
                 printf("Missing input at [%d]\n", i + 1);
+                printf("\nPress any key to continue");
+        		getch();
             }
             break;
 
@@ -816,10 +931,11 @@ int addEmployee(employeeTable empTable, char companyName[])
 
         default:
             printf("Not a valid choice!\n");
+            printf("\nPress any key to continue");
+        	getch();
         }
 
-        printf("\nPress any key to continue");
-        getch();
+        
     }
 
     return retValue;
