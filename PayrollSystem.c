@@ -102,10 +102,25 @@ typedef struct
 typedef employeeInfo employeeTable[SIZE]; // constant hash table
 
 /***** FUNCTION PROTOTYPES *****/
-int hash(char empID[]);
-void initialize(employeeTable empTable, char companyName[]); 
+int initialize(employeeTable empTable, char companyName[]); 
 int initEmpList(employeeTable empTable, char companyName[]); 
 int initAttendanceList(employeeTable empTable, char companyName[]);
+
+int hash(char empID[]);
+int insertEmployee(employeeTable empTable, employeeInfo emp);
+int searchEmployee(employeeTable empTable, char empID[]);
+int insertAttendance(employeeTable empTable, attendanceDetails att);
+int insertEmployeeToFile(char companyName[], employeeInfo emp);
+int insertAttendanceToFile(char companyName[], attendanceDetails att);
+
+int assignEmployeeID(employeeTable empTable, employeeInfo *emp);
+int dateValidation(int month, int day, int year);
+int emailValidation(char email[]);
+int phoneValidation(char phone[]);
+int payValidation(float amount);
+int addEmployee(employeeTable empTable, char companyName[]);
+
+
 /*End of initialization function Protypes */
 
 void terminate(); // properly terminate the file by freeing all dynamic memory (attendance LL)
@@ -138,6 +153,7 @@ int main()
 
     /* Variable declarations */
     int choice; // for switch statement main menu
+    int status; // to check if operation was successful
 
     printf("\n==========================================");
     printf("\n        CIS 2206 - PAYROLL SYSTEM         ");
@@ -202,13 +218,12 @@ int main()
 /**
  * @brief initializes the data and loads the file, sets up the internal memory
  * @param - gets pointer of employeeTable to initialize with the company name
- * @return - implicit return
+ * @return - number of employee records read
  */
-void initialize(employeeTable empTable, char companyName[])
+int initialize(employeeTable empTable, char companyName[])
 {
-    /*Variable Declaration*/
     int i; // counter
-    int count;
+    int empCount;
 
     for (i = 0; i < SIZE; i++) // loop for hash table initialization
     {
@@ -216,8 +231,10 @@ void initialize(employeeTable empTable, char companyName[])
         empTable[i].history = NULL;                  // sets each head pointer to NULL
     }
 
-    count = initEmpList(empTable, companyName);
+    empCount = initEmpList(empTable, companyName);
     initAttendanceList(empTable, companyName);
+
+    return empCount;
 }
 
 
@@ -298,7 +315,7 @@ int initAttendanceList(employeeTable empTable, char companyName[])
  * @param employee id
  * @return returns the hash value
  */
-int hash(char empID[8])
+int hash(char empID[])
 {
     int i;
     unsigned long sum = 1;
@@ -330,29 +347,6 @@ int insertEmployee(employeeTable empTable, employeeInfo emp)
 }
 
 /**
- * @brief inserts attendance record to the hash table
- * @param hash table and attendance details structure
- * @return returns 1 if successful and 0 if unsuccessful
- */
-int insertAttendance(employeeTable empTable, attendanceDetails att)
-{
-    int retVal = 0;
-    List *ptr, temp;
-    int index = searchEmployee(empTable,att.empID);
-    if(index != -1){
-        // traverse linked list (sorted in reverse order)
-        for(ptr = &empTable[index].history; *ptr != NULL && strcmp((*ptr)->attendance.payrollID,att.payrollID > 0); ptr=&(*ptr)->link) {}
-        temp = (List)malloc(sizeof(struct cell));
-        if(temp != NULL){
-            temp->attendance = att;
-            temp->link = *ptr;
-            *ptr = temp;
-        }
-    }
-    return retVal;
-}
-
-/**
  * @brief checks the position of a given employee in the hash table
  * @param hash table and the employee id
  * @return returns the index of the employee table where it exists and -1 if does not exist
@@ -372,6 +366,30 @@ int searchEmployee(employeeTable empTable, char empID[])
 }
 
 /**
+ * @brief inserts attendance record to the hash table
+ * @param hash table and attendance details structure
+ * @return returns 1 if successful and 0 if unsuccessful
+ */
+int insertAttendance(employeeTable empTable, attendanceDetails att)
+{   
+    int retVal = 0;
+    List *ptr, temp;
+    int index = searchEmployee(empTable,att.empID);
+    if(index != -1){
+        // traverse linked list (sorted in reverse order)
+        for(ptr = &empTable[index].history; *ptr != NULL && strcmp((*ptr)->attendance.payrollID,att.payrollID > 0); ptr=&(*ptr)->link) {}
+        temp = (List)malloc(sizeof(struct cell));
+        if(temp != NULL){
+            temp->attendance = att;
+            temp->link = *ptr;
+            *ptr = temp;
+            retVal = 1;
+        }
+    }
+    return retVal;
+}
+
+/**
  * @brief appends new employee record to the file
  * @param company name and employee structure
  * @return returns 1 if successful and 0 if unsuccessful
@@ -385,7 +403,7 @@ int insertEmployeeToFile(char companyName[], employeeInfo emp)
 
     strcpy(fileName, companyName);
     strcat(fileName, EMP_FILENAME);
-    newEmployee = emp.employee;
+    newEmployee = emp.employee; //datatype conversion, removing LL pointer
 
     fp = fopen(fileName, "ab");
     if (fp != NULL)
@@ -544,9 +562,9 @@ int payValidation(float amount)
 /**
  * @brief adds employee to the hash table based on user input
  * @param hash table
- * @return returns 1 if successful and 0 if unsuccessful
+ * @return returns 1 if successful, 0 if unsuccessful, and -1 if cancelled
  */
-int addEmployee(employeeTable empTable, char companyName[]) /* returns 0 if unsuccessful and 1 if successful */
+int addEmployee(employeeTable empTable, char companyName[]) 
 {
     /* buffer for input validation */
     char dateString[11], emailString[32], contactString[12];
@@ -770,17 +788,19 @@ int addEmployee(employeeTable empTable, char companyName[]) /* returns 0 if unsu
                     if (insertEmployee(empTable, newEmployee) && insertEmployeeToFile(companyName, newEmployee))
                     {
                         printf("Successfully created employee");
+                        retValue = 1;
                     }
                     else
                     {
                         printf("Employee Table is full\n");
+                        retValue = 0;
                     }
                 }
                 else
                 {
-                    printf("Failed to assign Employee ID\n");
+                    printf("Failed to assign Employee ID\n");                    
+                    retValue = 0;
                 }
-                retValue = 1;
                 exitFlag = 1; /* prompts to exit the loop */
             }
             else
@@ -790,6 +810,7 @@ int addEmployee(employeeTable empTable, char companyName[]) /* returns 0 if unsu
             break;
 
         case 'e':
+            retValue = -1;
             exitFlag = 1; /* prompts to exit the loop with the default return value of 0*/
             break;
 
