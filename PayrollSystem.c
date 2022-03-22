@@ -128,9 +128,10 @@ int phoneValidation(char phone[]);
 int payValidation(float amount);
 int addEmployee(employeeTable empTable, char companyName[]);
 
-void viewEmployeeList(employeeTable empTable);                                     // view entire list of employees
-void sortEmployees(employeeTable empTable, employeeList listEmployee);               // sort employees by department
+void viewEmployeeList(employeeTable empTable);                                      // view entire list of employees
+void sortEmployees(employeeTable empTable, employeeList listEmployee);              // sort employees by department
 int displayEmployees(employeeTable empTable, employeeList listEmployee, char dept); // display employee given by a department
+void clearEmployeeLL(employeeList listEmployee);
 
 /*End of initialization function Protypes */
 void viewEmployee();
@@ -683,17 +684,17 @@ int addEmployee(employeeTable empTable, char companyName[])
         printf("\n==========================================");
         printf("\n            CREATE NEW EMPLOYEE	        ");
         printf("\n==========================================");
-        printf("\n[ 1 ] Last Name:            \t%s", newEmployee.employee.name.LName);
-        printf("\n[ 2 ] First Name:           \t%s", newEmployee.employee.name.fName);
-        printf("\n[ 3 ] MI:                   \t%c.", newEmployee.employee.name.MI);
-        printf("\n[ 4 ] Date(MM/DD/YY):       \t%02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
-        printf("\n[ 5 ] Email:                \t%s", newEmployee.employee.contact.email);
-        printf("\n[ 6 ] Contact No.:          \t%s", newEmployee.employee.contact.phone);
-        printf("\n[ 7 ] Basic Salary:         \t%.02f", newEmployee.employee.details.basicSalary);
-        printf("\n[ 8 ] Overtime Pay:         \t%.02f", newEmployee.employee.details.overtimePay);
-        printf("\n[ 9 ] Total Contributions:  \t%.02f", newEmployee.employee.details.contributions);
-        printf("\n[ 0 ] Employee Status:      \t%s", (newEmployee.employee.status) ? "Inactive" : "Active");
-        printf("\n[ - ] Department:           \t%c", newEmployee.employee.department);
+        printf("\n[ 1 ] Last Name:              \t%s", newEmployee.employee.name.LName);
+        printf("\n[ 2 ] First Name:             \t%s", newEmployee.employee.name.fName);
+        printf("\n[ 3 ] MI:                     \t%c.", newEmployee.employee.name.MI);
+        printf("\n[ 4 ] Date employed(MM/DD/YY):\t%02d/%02d/%02d", newEmployee.employee.dateEmployed.month, newEmployee.employee.dateEmployed.day, newEmployee.employee.dateEmployed.year);
+        printf("\n[ 5 ] Email:                  \t%s", newEmployee.employee.contact.email);
+        printf("\n[ 6 ] Contact No.:            \t%s", newEmployee.employee.contact.phone);
+        printf("\n[ 7 ] Basic Salary:           \t%.02f", newEmployee.employee.details.basicSalary);
+        printf("\n[ 8 ] Overtime Pay:           \t%.02f", newEmployee.employee.details.overtimePay);
+        printf("\n[ 9 ] Total Contributions:    \t%.02f", newEmployee.employee.details.contributions);
+        printf("\n[ 0 ] Department:             \t%c", newEmployee.employee.department);
+        printf("\n[ - ] Employee Status:        \t%s", (newEmployee.employee.status) ? "Inactive" : "Active");
         printf("\n==========================================");
         printf("\n[c] create employee | [e] exit ");
         printf("\n\nChoice: ");
@@ -877,26 +878,6 @@ int addEmployee(employeeTable empTable, char companyName[])
             break;
 
         case '0':
-            printf("\n[ 0 ] Active");
-            printf("\n[ 1 ] Inactive");
-            printf("\nStatus: ");
-            fflush(stdin);
-            scanf("%c", &choice);
-            while ((ch = getchar()) != '\n' && ch != EOF)
-                ;
-            if (choice == '0' || choice == '1')
-            { /*check if input is valid*/
-                newEmployee.employee.status = choice - '0';
-            }
-            else
-            {
-                printf("Invalid input");
-                printf("\nPress any key to continue");
-                getch();
-            }
-            break;
-
-        case '-':
             printf("\nDepartment [A-Z]: ");
             fflush(stdin);
             scanf("%c", &newEmployee.employee.department);
@@ -916,6 +897,27 @@ int addEmployee(employeeTable empTable, char companyName[])
             }
 
             break;
+
+        case '-':
+            printf("\n[ 0 ] Active");
+            printf("\n[ 1 ] Inactive");
+            printf("\nStatus: ");
+            fflush(stdin);
+            scanf("%c", &choice);
+            while ((ch = getchar()) != '\n' && ch != EOF)
+                ;
+            if (choice == '0' || choice == '1')
+            { /*check if input is valid*/
+                newEmployee.employee.status = choice - '0';
+            }
+            else
+            {
+                printf("Invalid input");
+                printf("\nPress any key to continue");
+                getch();
+            }
+            break;
+
         case 'c':
             for (i = 0; i < 10 && validFlag[i] != 0; i++)
             {
@@ -987,7 +989,7 @@ void viewEmployeeList(employeeTable empTable)
     /* Employee linked list declaration and initialization */
     employeeList listEmployee;
     int x;
-    int choice, ch, flag = 1;
+    char choice, ch, flag = 1;
 
     for (x = 0; x < 26; x++)
     {
@@ -1000,11 +1002,13 @@ void viewEmployeeList(employeeTable empTable)
     {
         printf("\n[ 1 ] Display all employees");
         printf("\n[ 2 ] Display employees of a department");
-        printf("\nEnter a number: ");
-        scanf("%d", &choice);
+        printf("\n[ 3 ] Main menu");
+        printf("\n\nChoice: ");
+        fflush(stdin);
+        scanf("%c", &choice);
         switch (choice)
         {
-        case 1:
+        case '1':
             // display all employees
             flag = 0;
             for (ch = 'A'; ch <= 'Z'; ch++)
@@ -1012,22 +1016,35 @@ void viewEmployeeList(employeeTable empTable)
                 displayEmployees(empTable, listEmployee, ch);
             }
             break;
-        case 2:
+        case '2':
             // display all employees of a department
-            flag = 0;
             do
             {
-                printf("Please enter a department[A-Z]: ");
+                printf("\nPlease enter a department[A-Z] (0 to exit): ");
                 fflush(stdin);
                 scanf("%c", &ch);
-            } while (!isalpha(ch));
-            displayEmployees(empTable, listEmployee, ch);
+            } while (!(isalpha(ch)!=0 || ch=='0'));
+            if (ch !='0' && displayEmployees(empTable, listEmployee, ch) == 0)
+            {
+                printf("\nError: No employees found in the selected department [%c]. ",toupper(ch));
+            }
+            else
+            {
+                flag = 0;
+            }
+            break;
+        case '3':
+            clearEmployeeLL(listEmployee);
+            return;  
             break;
         default:
-            printf("Please enter 1 or 2");
+            printf("Invalid input. Please enter 1 or 2");
             break;
         }
     }
+    printf("\n\nPress any key to exit...");
+    getch();
+    clearEmployeeLL(listEmployee);
 }
 
 /**
@@ -1038,20 +1055,21 @@ void viewEmployeeList(employeeTable empTable)
 int displayEmployees(employeeTable empTable, employeeList listEmployee, char dept)
 {
     dept = toupper(dept);
-    printf("\nDEPARTMENT %c", dept);
-    printf("\n----------------------------------");
     int index = dept - 'A';
     int count = 0;
     List2 trav, ptr;
 
-    for (trav = listEmployee[index]; trav != NULL;)
+    if (listEmployee[index] != NULL)
     {
-        employeeDetails temp = empTable[trav->index].employee;
-        printf("\n%10s %20s, %20s %10c %s", temp.empID, temp.name.LName, temp.name.fName, temp.name.MI, (temp.status) ? "Inactive" : "Active");
-        ptr = trav;
-        trav = trav->link;
-        free(ptr);
-        count++;
+        printf("\nDEPARTMENT %c", dept);
+        printf("\n----------------------------------------------------------------------");
+
+        for (trav = listEmployee[index]; trav != NULL; trav = trav->link)
+        {
+            employeeDetails temp = empTable[trav->index].employee;
+            printf("\n  %-8s %-15s, %-26s %c.   %s", temp.empID, temp.name.LName, temp.name.fName, temp.name.MI, (temp.status) ? "Inactive" : "Active");
+            count++;
+        }
     }
     return count;
 }
@@ -1069,7 +1087,7 @@ void sortEmployees(employeeTable empTable, employeeList listEmployee)
     for (x = 0; x < SIZE; x++)
     {
         temp = empTable[x].employee;
-        if (strcmp(temp.empID, "EMPTY") != 0 || strcmp(temp.empID, "DELETED") != 0)
+        if (strcmp(temp.empID, "EMPTY") != 0 && strcmp(temp.empID, "DELETED") != 0)
         {
             int index = temp.department - 'A';
 
@@ -1081,6 +1099,21 @@ void sortEmployees(employeeTable empTable, employeeList listEmployee)
             new->index = x;
             new->link = *trav;
             *trav = new;
+        }
+    }
+}
+
+void clearEmployeeLL(employeeList listEmployee)
+{
+    int index;
+    List2 ptr, *trav;
+    for (index = 0; index < 26; index++)
+    {
+        for (trav = &listEmployee[index]; *trav != NULL;)
+        {
+            ptr = *trav;
+            *trav = ptr->link;
+            free(ptr);
         }
     }
 }
