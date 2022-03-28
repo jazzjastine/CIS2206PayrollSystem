@@ -38,7 +38,7 @@ Enter end date
      - compute for no. of working days. 
      - Have a separate list of public holidays
        embed them in the function being used.
-Enter attendance info for each ACTIVE employee in the group
+Enter attendan ceinfo for each ACTIVE employee in the group
      - no. days absent, hours overtime, mins undertime
 
 [optional] - 13th month pay -> compute "percentage" of attendance within the year and include it in the December payroll (detect Dec month)

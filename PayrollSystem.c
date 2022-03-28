@@ -133,8 +133,9 @@ void sortEmployees(employeeTable empTable, employeeList listEmployee);          
 int displayEmployees(employeeTable empTable, employeeList listEmployee, char dept); // display employee given by a department
 void clearEmployeeLL(employeeList listEmployee);
 
+void viewEmployee(employeeTable empTable);
+
 /*End of initialization function Protypes */
-void viewEmployee();
 void editEmployee();
 void createPayroll();
 void confirmExit();
@@ -194,7 +195,7 @@ int main()
             viewEmployeeList(empTable);
             break;
         case '3':
-            // viewEmployee();
+            viewEmployee(empTable);
             break;
         case '4':
             // editEmployee();
@@ -1116,4 +1117,92 @@ void clearEmployeeLL(employeeList listEmployee)
             free(ptr);
         }
     }
+}
+
+void viewEmployee(employeeTable empTable){
+    int index, period;
+    char givenID[8], flag = 1, choice;
+    List trav;
+
+    system("cls");
+    printf("\n==========================================");
+    printf("\n           VIEW SPECIFIC EMPLOYEE	        ");
+    printf("\n==========================================");
+    printf("\n\nEnter Employee ID: ");
+    fflush(stdin);
+    scanf("%s", givenID);
+
+    index = searchEmployee(empTable, givenID);
+
+    if(index != -1){
+        while (flag){
+            system("cls");
+            printf("\n==========================================");
+            printf("\n       VIEW SPECIFIC EMPLOYEE DETAILS     ");
+            printf("\n==========================================");
+            printf("\n[ 1 ] Display complete details");
+            printf("\n[ 2 ] Display periods");
+            printf("\n[ 3 ] Main menu");
+            printf("\n\nChoice: ");
+            fflush(stdin);
+            scanf("%c", &choice);
+            switch (choice)
+            {
+            case '1':
+                flag = 0;
+                system("cls");
+                printf("\n===================================================");
+                printf("\n             COMPLETE EMPLOYEE DETAILS     	     ");
+                printf("\n===================================================");
+                printf("\nEmployee ID:            \t%s", empTable[index].employee.empID);
+                printf("\nLast Name:              \t%s", empTable[index].employee.name.LName);
+                printf("\nFirst Name:             \t%s", empTable[index].employee.name.fName);
+                printf("\nMI:                     \t%c.", empTable[index].employee.name.MI);
+                printf("\nDate employed(MM/DD/YY):\t%02d/%02d/%02d", empTable[index].employee.dateEmployed.month, empTable[index].employee.dateEmployed.day, empTable[index].employee.dateEmployed.year);
+                printf("\nEmail:                  \t%s", empTable[index].employee.contact.email);
+                printf("\nContact No.:            \t%s", empTable[index].employee.contact.phone);
+                printf("\nBasic Salary:           \t%.02f", empTable[index].employee.details.basicSalary);
+                printf("\nOvertime Pay:           \t%.02f", empTable[index].employee.details.overtimePay);
+                printf("\nTotal Contributions:    \t%.02f", empTable[index].employee.details.contributions);
+                printf("\nDepartment:             \t%c", empTable[index].employee.department);
+                printf("\nEmployee Status:        \t%s", (empTable[index].employee.status) ? "Inactive" : "Active");
+                printf("\n===================================================");
+                break;
+            case '2':
+                flag = 0;
+                system("cls");
+                printf("\n==========================================");
+                printf("\n          EMPLOYEE PERIOD DETAILS         ");
+                printf("\n==========================================");
+                printf("\n\nEnter period to display: ");
+                fflush(stdin);
+                scanf("%d", &period);
+
+                system("cls");
+                printf("\nATTENDANCE DETAILS OF %s, %s %c.", empTable[index].employee.name.LName, empTable[index].employee.name.fName, empTable[index].employee.name.MI);
+                printf("\n----------------------------------------------------------------------");
+                printf("\nPeriod %d", period);
+
+                printf("\n\nPayroll ID");
+
+                for (trav = empTable[index].history; trav != NULL; trav = trav->link)
+                {
+                    attendanceDetails temp = trav->attendance;
+                    printf("\n  %-8s", temp.payrollID);
+                }
+                break;
+            case '3':
+                return;  
+                break;
+            default:
+                printf("Invalid input. Please enter 1 or 2");
+                break;
+            }
+        }
+    }
+    else{
+        printf("\nError: Emplyoee does not exist. ");
+    }
+    printf("\n\nPress any key to exit...");
+    getch();
 }
